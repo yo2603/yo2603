@@ -1,0 +1,93 @@
+import numpy as np
+
+# Fungsi untuk menghitung resistansi R pada temperatur T
+def R(T):
+    return 5000 * np.exp(3500 * (1/T - 1/298))
+
+# Metode selisih maju
+def forward_difference(T, h):
+    return (R(T + h) - R(T)) / h
+
+# Metode selisih mundur
+def backward_difference(T, h):
+    return (R(T) - R(T - h)) / h
+
+# Metode selisih tengah
+def central_difference(T, h):
+    return (R(T + h) - R(T - h)) / (2 * h)
+
+from sympy import symbols, exp, diff
+
+T_sym = symbols('T')
+R_sym = 5000 * exp(3500 * (1/T_sym - 1/298))
+exact_derivative = diff(R_sym, T_sym)
+
+def exact_derivative_func(T):
+    return exact_derivative.evalf(subs={T_sym: T})
+
+# Rentang temperatur
+temperatures = np.arange(250, 360, 10)
+h = 0.01  # Interval kecil untuk perhitungan
+
+# Hasil perhitungan
+forward_results = [forward_difference(T, h) for T in temperatures]
+backward_results = [backward_difference(T, h) for T in temperatures]
+central_results = [central_difference(T, h) for T in temperatures]
+exact_results = [exact_derivative_func(T) for T in temperatures]
+
+# Menampilkan hasil
+for T, fwd, bwd, ctr, exct in zip(temperatures, forward_results, backward_results, central_results, exact_results):
+    print(f"T = {T} K: Forward = {fwd:.4f}, Backward = {bwd:.4f}, Central = {ctr:.4f}, Exact = {exct:.4f}")
+
+import matplotlib.pyplot as plt
+
+# Hitung error relatif
+forward_error = np.abs((forward_results - exact_results) / exact_results)
+backward_error = np.abs((backward_results - exact_results) / exact_results)
+central_error = np.abs((central_results - exact_results) / exact_results)
+
+# Plot error relatif
+plt.figure(figsize=(10, 6))
+plt.plot(temperatures, forward_error, label='Forward Difference Error', marker='o')
+plt.plot(temperatures, backward_error, label='Backward Difference Error', marker='o')
+plt.plot(temperatures, central_error, label='Central Difference Error', marker='o')
+plt.axhline(y=0, color='k', linestyle='--')
+
+plt.title('Relative Error in Numerical Derivatives')
+plt.xlabel('Temperature (K)')
+plt.ylabel('Relative Error')
+plt.yscale('log')
+plt.legend()
+plt.grid()
+plt.show()
+
+def richardson_extrapolation(fwd, bwd):
+    return (4 * fwd - bwd) / 3
+
+# Hitung nilai dengan metode extrapolasi Richardson
+richardson_results = [richardson_extrapolation(forward_results[i], backward_results[i]) for i in range(len(temperatures))]
+
+# Menampilkan hasil
+for T, rich in zip(temperatures, richardson_results):
+    print(f"T = {T} K: Richardson Extrapolation = {rich:.4f}")
+
+# Hitung error relatif untuk Richardson
+richardson_error = np.abs((richardson_results - exact_results) / exact_results)
+
+# Plot error relatif untuk Richardson
+plt.figure(figsize=(10, 6))
+plt.plot(temperatures, richardson_error, label='Richardson Extrapolation Error', marker='o')
+plt.axhline(y=0, color='k', linestyle='--')
+
+plt.title('Relative Error in Richardson Extrapolation')
+plt.xlabel('Temperature (K)')
+plt.ylabel('Relative Error')
+plt.yscale('log')
+plt.legend()
+plt.grid()
+plt.show()
+
+Metode numerik (selisih maju, mundur, dan tengah) telah diterapkan untuk menghitung turunan resistansi termistor.
+Nilai eksak dari turunan juga telah dihitung untuk perbandingan.
+Error relatif dari metode numerik dibandingkan dengan nilai eksak telah dihitung dan diplot.
+Metode extrapolasi Richardson juga diimplementasikan untuk meningkatkan akurasi hasil perhitungan.

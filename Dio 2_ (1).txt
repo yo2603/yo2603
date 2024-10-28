@@ -1,0 +1,101 @@
+import numpy as np
+
+def gauss_elimination(A, b):
+    n = len(b)
+    
+    # Gabungkan A dan b
+    augmented_matrix = np.hstack([A, b.reshape(-1, 1)])
+    
+    # Eliminasi ke bentuk segitiga
+    for i in range(n):
+        for j in range(i + 1, n):
+            if augmented_matrix[j, i] != 0:
+                factor = augmented_matrix[j, i] / augmented_matrix[i, i]
+                augmented_matrix[j] -= factor * augmented_matrix[i]
+    
+    # Back substitution
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (augmented_matrix[i, -1] - np.dot(augmented_matrix[i, i + 1:n], x[i + 1:n])) / augmented_matrix[i, i]
+    
+    return x
+    
+    def gauss_jordan(A, b):
+    n = lien b
+    
+    # Gabungkan A dan b
+    augmented_matrix = np.hstack([A, b.reshape(-1, 1)])
+    
+    # Gauss-Jordan
+    for i in range(n):
+        # Normalisasi baris
+        augmented_matrix[i] = augmented_matrix[i] / augmented_matrix[i, i]
+        for j in range(n):
+            if i != j:
+                augmented_matrix[j] -= augmented_matrix[j, i] * augmented_matrix[i]
+    
+    return augmented_matrix[:, -1]
+
+# Menyelesaikan sistem menggunakan metode Gauss-Jordan
+solution_gauss_jordan = gauss_jordan(A, b)
+print(f"Solusi menggunakan metode Gauss-Jordan: I1 = {solution_gauss_jordan[0]:.4f}, I2 = {solution_gauss_jordan[1]:.4f}, I3 = {solution_gauss_jordan[2]:.4f}")
+
+# Matriks koefisien A dan vektor konstanta b
+A = np.array([[4, -1, -1],
+              [-1, 3, -1],
+              [-1, -1, 5]])
+b = np.array([5, 3, 4])
+
+# Menyelesaikan sistem menggunakan metode Gauss
+solution_gauss = gauss_elimination(A, b)
+print(f"Solusi menggunakan metode Gauss: I1 = {solution_gauss[0]:.4f}, I2 = {solution_gauss[1]:.4f}, I3 = {solution_gauss[2]:.4f}")
+
+# Menghitung determinan matriks A
+det_A = determinant(A)
+print(f"Determinan matriks A: {det_A:.4f}")
+
+def gauss_jordan(A, b):
+    n = len(b)
+    
+    # Gabungkan A dan b
+    augmented_matrix = np.hstack([A, b.reshape(-1, 1)])
+    
+    # Gauss-Jordan
+    for i in range(n):
+        # Normalisasi baris
+        augmented_matrix[i] = augmented_matrix[i] / augmented_matrix[i, i]
+        for j in range(n):
+            if i != j:
+                augmented_matrix[j] -= augmented_matrix[j, i] * augmented_matrix[i]
+    
+    return augmented_matrix[:, -1]
+
+# Menyelesaikan sistem menggunakan metode Gauss-Jordan
+solution_gauss_jordan = gauss_jordan(A, b)
+print(f"Solusi menggunakan metode Gauss-Jordan: I1 = {solution_gauss_jordan[0]:.4f}, I2 = {solution_gauss_jordan[1]:.4f}, I3 = {solution_gauss_jordan[2]:.4f}")
+
+def adjoint(matrix):
+    n = matrix.shape[0]
+    adj = np.zeros((n, n))
+    
+    for i in range(n):
+        for j in range(n):
+            submatrix = np.delete(np.delete(matrix, i, axis=0), j, axis=1)
+            adj[j, i] = ((-1) ** (i + j)) * determinant(submatrix)
+    
+    return adj
+
+def inverse(matrix):
+    det = determinant(matrix)
+    if det == 0:
+        raise ValueError("Matriks tidak dapat diinvers.");
+    return adjoint(matrix) / det
+
+# Menghitung invers matriks A
+A_inv = inverse(A)
+print("Invers matriks A:")
+print(A_inv)
+
+Metode Gauss dan Gauss-Jordan digunakan untuk menyelesaikan sistem persamaan linier dengan hasil yang sama.
+Fungsi determinan memberikan nilai determinan dari matriks.
+Fungsi invers memberikan invers matriks dengan menggunakan metode adjoin.
